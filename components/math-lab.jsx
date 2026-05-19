@@ -15,27 +15,8 @@ export default function MathLab() {
     const handleFileTextExtracted = async (text, filename) => {
         setIsUploadOpen(false);
         setExtractedText(text);
-        toast.info("Analyzing Math Problems", {
-            description: `Starting AI analysis on ${filename}...`,
-        });
-        setLoading(true);
-        try {
-            const results = await generateMathVariations(text, 3);
-            setVariationsData(results);
-            if (results.length > 0) {
-                toast.success("Variations Generated");
-            }
-            else {
-                toast.error("No math problems detected in this file.");
-            }
-        }
-        catch (e) {
-            console.error(e);
-            toast.error("Failed to generate variations.");
-        }
-        finally {
-            setLoading(false);
-        }
+        setManualText(text);
+        toast.success(`Extracted text from ${filename}. You can now review it or ask the AI to solve it!`);
     };
     const handleManualGenerate = async () => {
         if (!manualText.trim())
@@ -79,7 +60,7 @@ export default function MathLab() {
                     if (existingIdx >= 0) {
                         newData[existingIdx] = {
                             ...newData[existingIdx],
-                            variations: [...newData[existingIdx].variations, ...newProblem.variations]
+                            variations: [...(newData[existingIdx].variations || []), ...(newProblem.variations || [])]
                         };
                     } else {
                         newData.push(newProblem);
@@ -159,7 +140,7 @@ export default function MathLab() {
                       <Calculator className="h-3 w-3 mr-2 text-[#c57eff]"/> AI Variations
                     </h3>
                     <div className="space-y-3">
-                      {item.variations.map((variation, vIdx) => (<div key={vIdx} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                      {item.variations?.map((variation, vIdx) => (<div key={vIdx} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
                           <p className="text-sm text-white/80 leading-relaxed whitespace-pre-line"><span className="text-[#c57eff] font-bold mr-2">{vIdx + 1}.</span> {variation}</p>
                         </div>))}
                     </div>

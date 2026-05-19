@@ -129,8 +129,16 @@ export async function POST(request) {
         if (!extractedText || !extractedText.trim()) {
             return NextResponse.json({ error: "No text could be extracted from the file" }, { status: 400 });
         }
+
+        // Aggressively crush all PDF formatting gaps, newlines, and floating spaces
+        const cleanedText = extractedText
+            .replace(/\s+/g, ' ') // Collapse ALL whitespace (newlines, tabs, spaces) into a single space
+            .replace(/ ([0-9]{1,3}[\.\)]) /g, '\n\n$1 ') // Intelligently restore paragraph breaks before question numbers like " 1. ", " 15) ", " 100. "
+            .replace(/ (Q[0-9]{1,3}[\.\)]) /gi, '\n\n$1 ') // Restore paragraph breaks for " Q1. " format
+            .trim();
+
         return NextResponse.json({
-            text: extractedText,
+            text: cleanedText,
             filename: filename,
         });
     }

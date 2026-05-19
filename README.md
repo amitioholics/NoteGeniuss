@@ -19,10 +19,10 @@ Contact: **amitsinghrajput263@gmail.com**
   Turn notes into multiple-choice questions with dynamic scoring, explanations, and plausible distractors.
 
 - **Math Practice Lab & Image OCR**  
-  Upload images (PNG/JPG/WebP) or PDFs containing math problems. The app uses advanced AI Vision to extract the raw math text seamlessly.
+  Upload images (PNG/JPG/WebP) or PDFs containing math problems. The app uses advanced AI Vision and an intelligent text-unwrapping algorithm that aggressively crushes whitespace while preserving paragraph breaks before questions to extract the raw math text seamlessly.
   
-- **Generate More Variations**  
-  In the Math Lab, you can instantly generate limitless variations of extracted math problems to create complete, tailored practice sets.
+- **Review and Generate Variations**  
+  In the Math Lab, you can review the smartly compressed text extracted from documents before sending it to the AI. Instantly generate limitless variations of extracted math problems to create complete, tailored practice sets.
 
 - **Document Extraction**  
   Seamlessly upload and extract text from PDF, DOCX, and PPTX files to instantly create study notes.
