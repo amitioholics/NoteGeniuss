@@ -4,6 +4,7 @@ import { BookOpen, Brain, Plus, Upload, LayoutDashboard, Settings, HelpCircle, S
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { UserButton } from "@clerk/nextjs";
 export default function Sidebar({ activeTab, setActiveTab, onNewNote, onUpload }) {
     const navItems = [
         { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -50,6 +51,9 @@ export default function Sidebar({ activeTab, setActiveTab, onNewNote, onUpload }
 
             {/* Footer Links */}
             <div className="mt-auto pt-4 border-t border-white/5 flex flex-col gap-1">
+                <div className="flex items-center px-4 py-2 mb-2 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-colors">
+                    <UserButton showName appearance={{ elements: { userButtonBox: "flex-row-reverse w-full justify-between", userButtonOuterIdentifier: "text-white font-medium" } }} />
+                </div>
                 <button onClick={() => toast.info("Settings", { description: "Laboratory configuration coming soon!" })} className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-white hover:bg-white/5 rounded-xl transition-all duration-300">
                     <Settings className="h-4 w-4"/>
                     Settings

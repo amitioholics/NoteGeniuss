@@ -1,5 +1,6 @@
 export const runtime = "nodejs";
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import fs from "fs";
 import path from "path";
 // Path to our JSON file that stores notes
@@ -40,12 +41,19 @@ const saveNotes = (notes) => {
 };
 // GET handler to retrieve all notes
 export async function GET() {
+    const { userId } = await auth();
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const notes = getNotes();
-    return NextResponse.json(notes);
+    const userNotes = notes.filter(note => note.userId === userId);
+    return NextResponse.json(userNotes);
 }
 // POST handler to create a new note
 export async function POST(request) {
     try {
+        const { userId } = await auth();
+        if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
         const newNote = await request.json();
         // Validate the note
         if (!newNote.title || typeof newNote.content !== "string") {
@@ -54,6 +62,7 @@ export async function POST(request) {
         // Add timestamps and ID if not provided
         const noteToSave = {
             id: newNote.id || Date.now().toString(),
+            userId: userId,
             title: newNote.title,
             content: newNote.content,
             tags: newNote.tags || [],
@@ -77,20 +86,24 @@ export async function POST(request) {
 // PUT handler to update a note
 export async function PUT(request) {
     try {
+        const { userId } = await auth();
+        if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
         const updatedNote = await request.json();
         // Validate the note
         if (!updatedNote.id || !updatedNote.title) {
             return NextResponse.json({ error: "Invalid note data" }, { status: 400 });
         }
         const notes = getNotes();
-        const noteIndex = notes.findIndex((note) => note.id === updatedNote.id);
+        const noteIndex = notes.findIndex((note) => note.id === updatedNote.id && note.userId === userId);
         if (noteIndex === -1) {
-            return NextResponse.json({ error: "Note not found" }, { status: 404 });
+            return NextResponse.json({ error: "Note not found or access denied" }, { status: 404 });
         }
         // Update the note
         notes[noteIndex] = {
             ...notes[noteIndex],
             ...updatedNote,
+            userId: userId, // Ensure userId cannot be overwritten
             updatedAt: new Date().toISOString(),
         };
         if (saveNotes(notes)) {
@@ -108,17 +121,24 @@ export async function PUT(request) {
 // DELETE handler to delete a note
 export async function DELETE(request) {
     try {
+        const { userId } = await auth();
+        if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
         const url = new URL(request.url);
         const id = url.searchParams.get("id");
         if (!id) {
             return NextResponse.json({ error: "Note ID is required" }, { status: 400 });
         }
         const notes = getNotes();
-        const filteredNotes = notes.filter((note) => note.id !== id);
-        if (notes.length === filteredNotes.length) {
-            return NextResponse.json({ error: "Note not found" }, { status: 404 });
+        const noteIndex = notes.findIndex(note => note.id === id && note.userId === userId);
+        
+        if (noteIndex === -1) {
+            return NextResponse.json({ error: "Note not found or access denied" }, { status: 404 });
         }
-        if (saveNotes(filteredNotes)) {
+        
+        notes.splice(noteIndex, 1);
+        
+        if (saveNotes(notes)) {
             return NextResponse.json({ success: true });
         }
         else {

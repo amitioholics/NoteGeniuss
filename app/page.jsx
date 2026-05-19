@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Plus, Brain, BookOpen, Lightbulb, TrendingUp, Zap, Clock, FileText, ArrowRight, X, Save, Menu, LayoutDashboard, Upload, Calculator } from "lucide-react";
+import { Sparkles, Plus, Brain, BookOpen, Lightbulb, TrendingUp, Zap, Clock, FileText, ArrowRight, X, Save, Menu, LayoutDashboard, Upload, Calculator, Download } from "lucide-react";
 import { toast } from "sonner";
 import NoteEditor from "@/components/note-editor";
 import NotesList from "@/components/notes-list";
@@ -76,6 +76,21 @@ export default function Home() {
     const handleSelectNote = (note) => {
         setActiveNote(note);
         setActiveTab("editor");
+    };
+    
+    const handleExportNote = () => {
+        if (!activeNote) return;
+        const markdown = `# ${activeNote.title}\n\n${activeNote.content}\n\n---\nTags: ${activeNote.tags.join(", ")}`;
+        const blob = new Blob([markdown], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${activeNote.title.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'note'}.md`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast.success("Note exported successfully!");
     };
     const handleFileTextExtracted = (text, filename) => {
         const newNote = {
@@ -339,6 +354,10 @@ export default function Home() {
                   <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
                     <Button variant="outline" className="flex-1 sm:flex-none rounded-2xl border-white/10 hover:bg-white/10 hover:border-white/20 transition-all text-xs h-10 sm:h-11" onClick={() => setActiveTab("dashboard")}>
                       Dashboard
+                    </Button>
+                    <Button variant="outline" className="flex-1 sm:flex-none rounded-2xl border-white/10 hover:bg-white/10 hover:border-white/20 transition-all text-xs h-10 sm:h-11 text-[#c57eff]" onClick={handleExportNote}>
+                      <Download className="h-4 w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Export</span>
                     </Button>
                     <Button onClick={() => {
                     toast.success("Note saved successfully!", {

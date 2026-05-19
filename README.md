@@ -30,6 +30,15 @@ Contact: **amitsinghrajput263@gmail.com**
 - **Offline Resilience**  
   Graceful local fallback algorithms take over if the AI API is unavailable or rate-limited.
 
+- **User Authentication (Clerk)**  
+  Secure sign-up/login via Google, GitHub, or Email. Each user's notes are private and tied to their account.
+
+- **Export to PDF**  
+  Export your AI-generated math practice sets as beautifully formatted PDFs, ready to print or share.
+
+- **Export Notes as Markdown**  
+  Download any note as a clean `.md` file with content and tags preserved.
+
 - **Smooth, Modern UI**  
   Gradient theming, glass-morphism panels, smooth micro-interactions, and a responsive dark-mode design.
 
